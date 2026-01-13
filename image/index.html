@@ -1,0 +1,1495 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Skills Adventure (No Scroll)</title>
+<style>
+/* --- BASE & NO SCROLL STYLES --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+    height: 100vh;
+    overflow: hidden; /* Prevent scrolling on the main body */
+    font-family:'Comic Sans MS', cursive;
+    /* Using a fixed background for a consistent look */
+    background: url("https://tse4.mm.bing.net/th/id/OIP.U4QTkf_z4zPUF7VmuV_a-wHaDx?rs=1&pid=ImgDetMain&o=7&rm=3") no-repeat center center fixed; 
+    background-size: cover; 
+}
+.screen {
+    display: none;
+    height: 100vh;
+    overflow: hidden;
+    padding: 10px;
+    flex-direction: column;
+    justify-content: space-between; /* To place nav buttons at bottom */
+}
+.screen.active { display: flex; }
+
+/* --- COMPACT SIZING & STYLING --- */
+.header-title { 
+    font-size: 1.8rem; /* Smaller */
+    font-weight: bold; 
+    color: #ffcc00; 
+    text-align: center; 
+    padding: 5px; 
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.sub-text { 
+    text-align: center; 
+    font-size: 1rem; /* Smaller */
+    color: #fff; 
+    margin: 5px 0; 
+}
+.big-btn { 
+    background: #4CAF50; 
+    border-radius: 20px;
+    padding: 8px 15px; /* Smaller padding */
+    font-size: 0.9rem; 
+    font-weight: bold; 
+    border: 2px solid #555; 
+    color: white; 
+    display: inline-block; 
+    margin: 3px; 
+    cursor: pointer; 
+    transition: transform 0.2s; 
+}
+.big-btn:active { transform: scale(0.95); }
+.wrapper { 
+    background: rgba(255,255,255,0.95); 
+    width: 95%; 
+    max-width: 600px;
+    margin: 0 auto; 
+    padding: 10px; 
+    border-radius: 15px; 
+    flex: 1; /* Takes up available space */
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allow internal content to scroll if it exceeds wrapper height */
+}
+
+/* Name Screen Specific */
+#name-screen .wrapper { text-align: center; }
+#name-screen img { max-width: 90%; max-height: 20vh; margin-bottom: 5px; }
+#name-screen label, #name-screen div { font-size: 0.9rem; font-weight: bold; }
+#name-screen input { padding: 8px; border-radius: 8px; margin: 5px 0; font-size: 0.9rem;}
+.age-options { display: flex; gap: 5px; margin: 10px 0; }
+.age-box { 
+    flex: 1; 
+    padding: 8px; 
+    background: #27F5E0; 
+    border-radius: 10px; 
+    border: 2px solid #ffb300; 
+    cursor: pointer; 
+    font-size: 0.9rem;
+    text-align: center;
+}
+.age-box b { font-size: 0.7rem; }
+.age-box.selected { background: #ffb300; color: white; }
+.nav-btn, .btn-row { text-align: center; padding-top: 10px; }
+
+/* Dashboard & Goals Specific */
+.star-row { 
+    background: #fef3c7; 
+    padding: 8px; 
+    margin: 5px 0; 
+    border-radius: 8px; 
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+#dashboard hr { margin: 10px 0; border: 1px solid #764ba2; }
+
+/* --- GAME MENU STYLES (New) --- */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for mobile fit */
+    gap: 10px;
+    padding: 10px;
+    flex-grow: 1;
+    align-content: start; 
+}
+.game-box {
+    background: #ffcc00;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    border: 3px solid #764ba2;
+    transition: transform 0.1s;
+}
+.game-box:active { transform: scale(0.95); }
+.game-box .emoji { font-size: 3rem; margin-bottom: 5px; }
+.game-box .label { font-weight: bold; font-size: 1rem; color: #764ba2; }
+
+/* --- GAME PLAY STYLES (New) --- */
+#game-container .wrapper {
+    justify-content: space-around;
+    align-items: center;
+}
+.controls-bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto 10px;
+    padding: 5px 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.sound-toggle { cursor: pointer; }
+.game-area {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 10px;
+    overflow-y: auto; /* Allows game content to scroll if needed */
+}
+.animal-emoji { font-size: 4rem; margin-bottom: 10px; }
+.info-box {
+    background: #e0f7fa;
+    border: 2px solid #00bcd4;
+    padding: 8px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+.info-text { font-size: 1.1rem; font-weight: bold; color: #00838f; }
+.progress-bar {
+    background: #cfd8dc;
+    border-radius: 5px;
+    height: 15px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: #4CAF50;
+    color: white;
+    text-align: right;
+    padding-right: 5px;
+    line-height: 15px;
+    font-size: 0.7rem;
+    transition: width 0.3s;
+}
+.item-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+.item-btn, .task-card {
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #764ba2;
+    background: #ffecb3;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: background 0.1s;
+    font-family:'Comic Sans MS', cursive;
+}
+.item-btn:active, .task-card:active { transform: scale(0.95); }
+.task-card { font-size: 1rem; }
+.task-card.completed { background: #d4edda; border-color: #16a34a; text-decoration: line-through; }
+.task-card.wrong { background: #f8d7da; border-color: #dc3545; }
+
+/* --- CELEBRATION STYLES (New) --- */
+.celebration {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+.celebration.hidden { display: none; }
+.celebration-star { font-size: 8rem; color: yellow; animation: pulse 0.5s infinite alternate; }
+.celebration-text { font-size: 2rem; color: white; font-weight: bold; margin-top: 10px; }
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+/* ======================================================================
+   AGE 6-7 SECTION (GROWING STARS) - COMPLETE HUB DESIGN
+   ====================================================================== */
+#growing-full-hub {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    min-height: 100vh;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+}
+
+#growing-full-hub.active {
+    display: flex;
+}
+
+#growing-full-hub .wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: transparent;
+    width: 100%;
+    padding: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#growing-full-hub .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#growing-full-hub .header {
+    text-align: center;
+    padding: 30px 0;
+    margin-bottom: 40px;
+}
+
+#growing-full-hub .header h1 {
+    font-size: 48px;
+    color: #1a237e;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#growing-full-hub .header p {
+    font-size: 20px;
+    color: #0d47a1;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+#growing-full-hub .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+#growing-full-hub .game-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+#growing-full-hub .game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+#growing-full-hub .game-icon {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 70px;
+}
+
+#growing-full-hub .game-content {
+    padding: 25px;
+    text-align: center;
+}
+
+#growing-full-hub .game-title {
+    font-size: 24px;
+    color: #1a237e;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#growing-full-hub .game-description {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+#growing-full-hub .play-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+
+#growing-full-hub .game-card:hover .play-button {
+    transform: scale(1.05);
+}
+
+/* Game-specific colors */
+.recycle { background: linear-gradient(135deg, #81c784 0%, #4caf50 100%); }
+.road { background: linear-gradient(135deg, #64b5f6 0%, #1976d2 100%); }
+.study { background: linear-gradient(135deg, #ffd54f 0%, #ff9800 100%); }
+.environment { background: linear-gradient(135deg, #a5d6a7 0%, #388e3c 100%); }
+.sleep { background: linear-gradient(135deg, #f48fb1 0%, #d81b60 100%); }
+.bag { background: linear-gradient(135deg, #80deea 0%, #00acc1 100%); }
+.lifeskills { background: linear-gradient(135deg, #ce93d8 0%, #8e24aa 100%); }
+.bekind { background: linear-gradient(135deg, #ffcc80 0%, #ff9800 100%); }
+.plant { background: linear-gradient(135deg, #a5d6a7 0%, #388e3c 100%); }
+
+#growing-full-hub .footer {
+    text-align: center;
+    padding: 30px;
+    color: #1a237e;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    margin-top: 40px;
+}
+
+/* ======================================================================
+   AGE 8-9 SECTION (SUPER HEROES) - COMPLETE HUB DESIGN
+   ====================================================================== */
+#super-full-bundle {
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+}
+
+#super-full-bundle.active {
+    display: flex;
+}
+
+#super-full-bundle .wrapper {
+    max-width: 1200px;
+    background: transparent;
+    width: 100%;
+    padding: 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#super-full-bundle .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#super-full-bundle .header {
+    text-align: center;
+    padding: 30px 0;
+    margin-bottom: 40px;
+}
+
+#super-full-bundle .header h1 {
+    font-size: 48px;
+    color: #ffffff;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#super-full-bundle .header p {
+    font-size: 20px;
+    color: #93c5fd;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Game grid for Age 8-9 */
+#super-full-bundle .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+#super-full-bundle .game-card {
+    background: #1e293b;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border: 2px solid #334155;
+}
+
+#super-full-bundle .game-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    border-color: #60a5fa;
+}
+
+#super-full-bundle .game-icon {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 70px;
+    background: #0f172a;
+}
+
+#super-full-bundle .game-content {
+    padding: 25px;
+    text-align: center;
+}
+
+#super-full-bundle .game-title {
+    font-size: 24px;
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+#super-full-bundle .game-description {
+    color: #cbd5e1;
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+#super-full-bundle .play-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: transform 0.2s;
+}
+
+#super-full-bundle .game-card:hover .play-button {
+    transform: scale(1.05);
+}
+
+/* Game-specific colors for Age 8-9 */
+.art { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+.math { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+.brain { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+.money { background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%); }
+.writing { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+.science { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+.history { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+.geography { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+.coding { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+
+#super-full-bundle .footer {
+    text-align: center;
+    padding: 30px;
+    color: #ffffff;
+    font-size: 18px;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 20px;
+    margin-top: 40px;
+    border: 2px solid #475569;
+}
+
+/* Back button injection CSS */
+.game-back-overlay {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    display: none;
+}
+
+.game-back-btn {
+    background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+.game-back-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    #growing-full-hub .games-grid,
+    #super-full-bundle .games-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+    
+    #growing-full-hub .header h1,
+    #super-full-bundle .header h1 {
+        font-size: 36px;
+    }
+    
+    #growing-full-hub .header p,
+    #super-full-bundle .header p {
+        font-size: 18px;
+        padding: 0 15px;
+    }
+}
+</style>
+<script>
+// Initializing state variables
+let selectedAge = ''; 
+let currentGame = ''; 
+let voiceEnabled = true; 
+let musicEnabled = true; 
+let timeRemaining = 180; 
+let timerInterval = null;
+const synth = window.speechSynthesis;
+const stars = {
+    junior: {share:0,cleanup:0,help:0,emotions:0,mealtime:0,morning:0},
+    growing: {morningplus:0,healthy:0,organize:0,bekind:0,recycle:0,road:0,study:0,environment:0,sleep:0,bag:0,lifeskills:0,plant:0},
+    super: {road:0,backpack:0,recycle:0,plant:0,art:0,math:0,brain:0,money:0,writing:0,science:0,history:0,geography:0,coding:0}
+};
+let gameState = {count:0,max:0}; // Used for game progress tracking
+
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (id === 'dashboard') updateDashboard();
+    // No need to call showFunGoals here as it's an alias for showScreen('goals')
+}
+
+function selectAge(el) {
+    // Correctly get the age group data attribute
+    selectedAge = el.getAttribute('data-age-group');
+    document.querySelectorAll('.age-box').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+function startAdventure() {
+    const name = document.getElementById('playerName').value.trim();
+    if (!name || !selectedAge) { alert('Enter name and select age!'); return; }
+    speak(`Welcome ${name}!`);
+    
+    // Route to the appropriate screen based on age group
+    if (selectedAge === 'growing') {
+        showScreen('growing-full-hub');
+    } else if (selectedAge === 'super') {
+        showScreen('super-full-bundle');
+    } else {
+        showScreen(selectedAge + '-menu'); 
+    }
+}
+
+function startGrowSkills() { startAdventure(); } 
+function showDashboard() { showScreen('dashboard'); }
+function showFunGoals() { showScreen('goals'); } 
+
+// --- GAME LOGIC FUNCTIONS ---
+function startGame(game) {
+    currentGame = game;
+    stopTimer(); 
+    showScreen('game-container');
+    startTimer();
+    const c = document.getElementById('game-content');
+    c.innerHTML = ''; 
+    
+    // --- JUNIOR GAMES (3-5) ---
+    if (game === 'share') {
+        gameState = {count:0,max:3,items:['🍪','🍎','🍌','🧃','🍕']};
+        c.innerHTML = `<div class="animal-emoji">🐰</div><div class="info-box"><div class="info-text">SHARED: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        updateItems();
+        speak('Time to share 5 items with a friend!');
+    } else if (game === 'cleanup') {
+        gameState = {count:0,max:6};
+        c.innerHTML = `<div class="animal-emoji">🐻</div><div class="info-box"><div class="info-text">CLEANED: <span id="count">0</span>/6</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div><div style="text-align:center;font-size:3rem;margin-top:20px;">📦</div>`;
+        document.getElementById('items').innerHTML = ['🧸','🚗','🖍️','🎨','⚽','🧱','🌐'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<6})">${e}</button>`).join('');
+        speak('Help clean up the toys!');
+    } else if (game === 'help') {
+        c.innerHTML = `<div class="animal-emoji">🐶</div><div style="font-size:4rem;text-align:center;margin:30px 0;">⚽</div><div style="text-align:center;"><button class="big-btn" style="background:#FFA500;" onclick="celebrate()">✋ I WILL HELP!</button></div><p style="text-align:center; margin-top:10px;">Click when you help a friend or family member!</p>`;
+        speak('Be a helper!');
+    } else if (game === 'emotions') {
+        c.innerHTML = `<div class="animal-emoji">🐱</div><div style="font-size:1.5rem;text-align:center;margin:10px;">How feel when someone is kind to you?</div><div style="display:flex;justify-content:center;gap:10px;margin:15px;"><button class="item-btn" onclick="celebrate()">😊 Happy</button><button class="item-btn" onclick="speak('Try again!')">😢 Sad</button><button class="item-btn" onclick="speak('Try again!')">😠 Angry</button></div>`;
+        speak('How do you feel when someone is kind?');
+    } else if (game === 'mealtime') {
+        gameState = {count:0,max:4};
+        c.innerHTML = `<div class="animal-emoji">🐻</div><div class="info-box"><div class="info-text">SET: <span id="count">0</span>/4</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🍽️ Plate','🍴 Fork','🔪 Knife (Parent Only)','🥤 Cup','🍳 Pan'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<4})">${e}</button>`).join('');
+        speak('Help set the table!');
+    } else if (game === 'morning') {
+        gameState = {count:0,max:4};
+        c.innerHTML = `<div class="animal-emoji">🐰</div><div class="info-box"><div class="info-text">READY: <span id="count">0</span>/4</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🪥 Toothbrush','💇 Brush Hair','👕 Get Dressed','👟 Put on Shoes','🧸 Play Time'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<4})">${e}</button>`).join('');
+        speak('Get ready for the day!');
+    // --- GROWING GAMES (6-7) ---
+    } else if (game === 'morningplus') {
+        gameState = {count:0,max:10};
+        c.innerHTML = `<div class="animal-emoji">🌞</div><h3 style="text-align:center; font-size: 1.2rem;">Complete All Morning Routine Tasks!</h3><div id="items" class="item-grid" style="grid-template-columns: repeat(2, 1fr);"></div>`;
+        document.getElementById('items').innerHTML = ['⏰ Wake','🛏️ Make Bed','🦷 Brush','🚿 Wash Face','🍽️ Eat Breakfast','👕 Dress','🎒 Check Pack','👟 Shoes','📚 Homework','🧴 Comb'].map(e=>`<div class="task-card" onclick="completeTask(this, 10)">${e}</div>`).join('');
+        speak('Complete morning tasks!');
+    } else if (game === 'healthy') {
+        gameState = {count:0,max:12};
+        c.innerHTML = `<div class="animal-emoji">🍎</div><h3 style="text-align:center; font-size: 1.2rem;">Choose 6 Healthy Foods!</h3><div class="info-box"><div class="info-text">Healthy Score: <span id="count">0</span>/6</div></div><div id="items" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;"></div>`;
+        const foods = [['🍎',1],['🍩',0],['🥕',1],['🥤',0],['🍌',1],['🍟',0],['🥒',1],['🍇',1],['🥛',1],['🥚',1],['🍕',0],['🧁',0]];
+        document.getElementById('items').innerHTML = foods.map(([e,h])=>`<button class="task-card" onclick="selectFood(this,${h})">${e}</button>`).join('');
+        speak('Choose healthy!');
+    } else if (game === 'organize') {
+        gameState = {count:0,max:6};
+        c.innerHTML = `<div class="animal-emoji">📚</div><h3 style="text-align:center; font-size: 1.2rem;">Organize 6 Items!</h3><div class="info-box"><div class="info-text">Organized: <span id="count">0</span>/6</div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🧸 Teddy','📚 Book','👕 Shirt','🛏️ Pillow','⚽ Ball','🧦 Socks'].map(e=>`<button class="item-btn" onclick="organize(this)">${e}</button>`).join('');
+        speak('Put in right place!');
+    } else if (game === 'bekind') {
+        gameState = {count:0,max:8};
+        c.innerHTML = `<div class="animal-emoji">🤗</div><h3 style="text-align:center; font-size: 1.2rem;">Choose 4 Kind Actions!</h3><div class="info-box"><div class="info-text">Kind Points: <span id="count">0</span>/4</div></div><div id="items" class="item-grid" style="grid-template-columns: repeat(2, 1fr);"></div>`;
+        document.getElementById('items').innerHTML = [['👦 Help Kid',1],['🙄 Ignore',0],['🧹 Clean',1],['😡 Fight',0],['😊 Share',1],['🚫 Break',0],['🙏 Say Sorry',1],['😶 Lie',0]].map(([t,k])=>`<div class="task-card" onclick="kindAction(this,${k})">${t}</div>`).join('');
+        speak('Choose kind!');
+    } else if (game === 'recycle') {
+        gameState = {count:0,max:4};
+        c.innerHTML = `<div class="animal-emoji">♻️</div><h3 style="text-align:center; font-size: 1.2rem;">Recycle 5 Items!</h3><div class="info-box"><div class="info-text">Recycled: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🥫 Can','📰 Paper','🥤 Plastic Bottle','🍌 Peel (Wrong)','📦 Cardboard','🔋 Battery (Wrong)'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i==0 || i==1 || i==2 || i==4})">${e}</button>`).join('');
+        speak('Choose what to recycle!');
+    } else if (game === 'road') {
+        c.innerHTML = `<div class="animal-emoji">🚦</div><h3 style="text-align:center; font-size: 1.2rem;">Road Safety Quiz!</h3><div id="quiz" style="text-align:center; margin-top: 20px;"></div><div class="info-box" style="margin-top: 20px;"><div class="info-text" id="quiz-status">Click to Start!</div></div>`;
+        gameState = {score: 0, max: 3, currentQ: 0, 
+            questions: [
+                {q: "What color is STOP?", a: 0, opts: ["Red", "Green", "Yellow"]},
+                {q: "Look left, then __, then left again.", a: 1, opts: ["Down", "Right", "Up"]},
+                {q: "Cross the street at the __ walk.", a: 0, opts: ["Cross", "Run", "Jump"]}
+            ]};
+        loadQuiz();
+        speak('Road Safety Quiz!');
+    } else if (game === 'study') {
+        gameState = {count:0,max:8};
+        c.innerHTML = `<div class="animal-emoji">📚</div><h3 style="text-align:center; font-size: 1.2rem;">Complete 8 Study Tasks!</h3><div class="info-box"><div class="info-text">Completed: <span id="count">0</span>/8</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['✏️ Write','📖 Read','🧠 Think','🔍 Research','💡 Idea','📝 Notes','🗣️ Discuss','✅ Check'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<8})">${e}</button>`).join('');
+        speak('Complete study tasks!');
+    } else if (game === 'environment') {
+        gameState = {count:0,max:6};
+        c.innerHTML = `<div class="animal-emoji">🌱</div><h3 style="text-align:center; font-size: 1.2rem;">Choose 6 Eco-Friendly Actions!</h3><div class="info-box"><div class="info-text">Eco Score: <span id="count">0</span>/6</div></div><div id="items" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;"></div>`;
+        const eco = [['♻️ Recycle',1],['💡 Lights off',1],['🚰 Save water',1],['🌳 Plant tree',1],['🚗 Carpool',1],['🛍️ Reuse bag',1],['🚫 Litter',0],['💨 Smoke',0]];
+        document.getElementById('items').innerHTML = eco.map(([e,h])=>`<button class="task-card" onclick="selectFood(this,${h})">${e}</button>`).join('');
+        speak('Choose eco-friendly actions!');
+    } else if (game === 'sleep') {
+        gameState = {count:0,max:5};
+        c.innerHTML = `<div class="animal-emoji">😴</div><h3 style="text-align:center; font-size: 1.2rem;">Prepare for Bedtime!</h3><div class="info-box"><div class="info-text">Prepared: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🛏️ Make Bed','🦷 Brush Teeth','📖 Read Book','🛀 Wash Up','🌙 Lights Out','🎮 Game (Wrong)'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<5})">${e}</button>`).join('');
+        speak('Prepare for bedtime!');
+    } else if (game === 'bag') {
+        gameState = {count:0,max:5};
+        c.innerHTML = `<div class="animal-emoji">🎒</div><h3 style="text-align:center; font-size: 1.2rem;">Pack Your Bag! (5 Items)</h3><div class="info-box"><div class="info-text">Packed: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['📚 Book','✏️ Pencil','🍎 Snack','👟 Toy','💦 Water Bottle','🧤 Gloves'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<5})">${e}</button>`).join('');
+        speak('Pack your school bag!');
+    } else if (game === 'lifeskills') {
+        gameState = {count:0,max:4};
+        c.innerHTML = `<div class="animal-emoji">🌟</div><h3 style="text-align:center; font-size: 1.2rem;">Complete 4 Life Skills!</h3><div id="items" class="item-grid" style="grid-template-columns: repeat(2, 1fr);"></div>`;
+        document.getElementById('items').innerHTML = [['🧹 Clean Room',1],['🍽️ Set Table',1],['👕 Fold Clothes',1],['🌱 Water Plants',1],['🎮 Play Games',0],['📺 Watch TV',0]].map(([t,k])=>`<div class="task-card" onclick="kindAction(this,${k})">${t}</div>`).join('');
+        speak('Complete life skills!');
+    } else if (game === 'plant') {
+        c.innerHTML = `<div class="animal-emoji">🌱</div><h3 style="text-align:center; font-size: 1.2rem;">Plant a Seed!</h3><div style="text-align:center; margin:30px 0;"><button class="big-btn" style="background:#00bcd4;" onclick="celebrate()">💧 WATER PLANT</button></div><p style="text-align:center; margin-top:10px;">Click when you take care of a plant!</p>`;
+        speak('Plant a seed and help it grow!');
+    // --- SUPER GAMES (8-9) ---
+    } else if (game === 'art') {
+        gameState = {count:0,max:5};
+        c.innerHTML = `<div class="animal-emoji">🎨</div><h3 style="text-align:center; font-size: 1.2rem;">Create 5 Art Pieces!</h3><div class="info-box"><div class="info-text">Created: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🖼️ Painting','✏️ Drawing','🎭 Mask','🏺 Pottery','🖍️ Coloring','📝 Writing'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<5})">${e}</button>`).join('');
+        speak('Create art pieces!');
+    } else if (game === 'math') {
+        c.innerHTML = `<div class="animal-emoji">🧮</div><h3 style="text-align:center; font-size: 1.2rem;">Math Challenge!</h3><div id="quiz" style="text-align:center; margin-top: 20px;"></div><div class="info-box" style="margin-top: 20px;"><div class="info-text" id="quiz-status">Click to Start!</div></div>`;
+        gameState = {score: 0, max: 3, currentQ: 0, 
+            questions: [
+                {q: "What is 15 + 27?", a: 0, opts: ["42", "32", "52"]},
+                {q: "What is 8 × 9?", a: 1, opts: ["72", "64", "81"]},
+                {q: "What is 100 ÷ 4?", a: 2, opts: ["20", "30", "25"]}
+            ]};
+        loadQuiz();
+        speak('Math Challenge!');
+    } else if (game === 'brain') {
+        gameState = {count:0,max:6};
+        c.innerHTML = `<div class="animal-emoji">🧩</div><h3 style="text-align:center; font-size: 1.2rem;">Solve 6 Brain Teasers!</h3><div class="info-box"><div class="info-text">Solved: <span id="count">0</span>/6</div></div><div id="items" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;"></div>`;
+        const puzzles = [['🧩 Puzzle',1],['❓ Riddle',1],['🔢 Pattern',1],['🚫 Skip',0],['🔍 Find',1],['🤔 Think',1],['💡 Idea',1],['⌛ Wait',0]];
+        document.getElementById('items').innerHTML = puzzles.map(([e,h])=>`<button class="task-card" onclick="selectFood(this,${h})">${e}</button>`).join('');
+        speak('Solve brain teasers!');
+    } else if (game === 'money') {
+        gameState = {count:0,max:5};
+        c.innerHTML = `<div class="animal-emoji">💰</div><h3 style="text-align:center; font-size: 1.2rem;">Count 5 Money Items!</h3><div class="info-box"><div class="info-text">Counted: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['💵 Bill','🪙 Coin','💰 Bag','💳 Card','🧾 Receipt','🎁 Gift'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<5})">${e}</button>`).join('');
+        speak('Count money items!');
+    } else if (game === 'writing') {
+        gameState = {count:0,max:4};
+        c.innerHTML = `<div class="animal-emoji">✍️</div><h3 style="text-align:center; font-size: 1.2rem;">Write 4 Creative Sentences!</h3><div class="info-box"><div class="info-text">Written: <span id="count">0</span>/4</div></div><div id="items" class="item-grid" style="grid-template-columns: repeat(2, 1fr);"></div>`;
+        document.getElementById('items').innerHTML = [['📝 Story',1],['🎭 Drama',1],['📜 Poem',1],['❌ None',0],['📖 Book',1],['🚫 Skip',0],['✏️ Essay',1],['😴 Sleep',0]].map(([t,k])=>`<div class="task-card" onclick="kindAction(this,${k})">${t}</div>`).join('');
+        speak('Write creative sentences!');
+    } else if (game === 'science') {
+        gameState = {count:0,max:6};
+        c.innerHTML = `<div class="animal-emoji">🔬</div><h3 style="text-align:center; font-size: 1.2rem;">Organize 6 Science Tools!</h3><div class="info-box"><div class="info-text">Organized: <span id="count">0</span>/6</div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🔭 Telescope','🧪 Test Tube','⚖️ Scale','🌡️ Thermometer','🔋 Battery','🧫 Petri Dish'].map(e=>`<button class="item-btn" onclick="organize(this)">${e}</button>`).join('');
+        speak('Organize science tools!');
+    } else if (game === 'history') {
+        gameState = {count:0,max:5};
+        c.innerHTML = `<div class="animal-emoji">🏛️</div><h3 style="text-align:center; font-size: 1.2rem;">Learn 5 History Facts!</h3><div class="info-box"><div class="info-text">Learned: <span id="count">0</span>/5</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['👑 King','🏺 Vase','🗿 Statue','📜 Scroll','⚔️ Sword','🛡️ Shield'].map((e,i)=>`<button class="item-btn" onclick="clickItem(${i<5})">${e}</button>`).join('');
+        speak('Learn history facts!');
+    } else if (game === 'geography') {
+        c.innerHTML = `<div class="animal-emoji">🌍</div><h3 style="text-align:center; font-size: 1.2rem;">Geography Quiz!</h3><div id="quiz" style="text-align:center; margin-top: 20px;"></div><div class="info-box" style="margin-top: 20px;"><div class="info-text" id="quiz-status">Click to Start!</div></div>`;
+        gameState = {score: 0, max: 3, currentQ: 0, 
+            questions: [
+                {q: "What is the largest ocean?", a: 1, opts: ["Atlantic", "Pacific", "Indian"]},
+                {q: "Which continent is the largest?", a: 0, opts: ["Asia", "Africa", "North America"]},
+                {q: "What is the capital of France?", a: 2, opts: ["London", "Berlin", "Paris"]}
+            ]};
+        loadQuiz();
+        speak('Geography Quiz!');
+    } else if (game === 'coding') {
+        gameState = {count:0,max:6};
+        c.innerHTML = `<div class="animal-emoji">💻</div><h3 style="text-align:center; font-size: 1.2rem;">Write 6 Code Lines!</h3><div class="info-box"><div class="info-text">Written: <span id="count">0</span>/6</div><div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%">0%</div></div></div><div class="item-grid" id="items"></div>`;
+        document.getElementById('items').innerHTML = ['🔤 Print','🔄 Loop','⚙️ Function','❓ If','➕ Add','➖ Subtract'].map(e=>`<button class="item-btn" onclick="organize(this)">${e}</button>`).join('');
+        speak('Write code lines!');
+    }
+}
+
+// Helper functions for various games
+function updateItems() {
+    const grid = document.getElementById('items');
+    grid.innerHTML = gameState.items.map(e=>`<button class="item-btn" onclick="shareItem(this)">${e}</button>`).join('');
+}
+
+function shareItem(btn) {
+    btn.style.display = 'none';
+    gameState.count++;
+    updateProgress();
+    if (gameState.count >= gameState.max) celebrate();
+    else speak('Thank you for sharing!');
+}
+
+function clickItem(correct) {
+    if (!correct) { speak('Oops, try again!'); return; }
+    event.target.style.display = 'none';
+    gameState.count++;
+    updateProgress();
+    if (gameState.count >= gameState.max) celebrate();
+    else speak('Good job!');
+}
+
+function completeTask(el, max) {
+    if(el.classList.contains('completed')) return;
+    el.classList.add('completed');
+    el.innerHTML += ' ⭐';
+    gameState.count++;
+    if (gameState.count >= max) celebrate();
+}
+
+function selectFood(el, healthy) {
+    if(el.classList.contains('completed') || el.classList.contains('wrong')) return;
+    
+    el.style.pointerEvents = 'none';
+    if (healthy) { 
+        el.classList.add('completed');
+        el.innerHTML += ' ✅'; 
+        gameState.count++; 
+    } else { 
+        el.classList.add('wrong');
+        el.innerHTML += ' ❌'; 
+    }
+    document.getElementById('count').textContent = gameState.count + '/6';
+    if (gameState.count >= 6) celebrate(); 
+    else if (!healthy) speak('That\'s a sometimes food. Try a healthy choice!');
+    else speak('Yum! A healthy choice!');
+}
+
+function organize(btn) {
+    btn.style.display = 'none';
+    gameState.count++;
+    document.getElementById('count').textContent = gameState.count + '/6';
+    if (gameState.count >= gameState.max) celebrate();
+    else speak('Tidy!');
+}
+
+function kindAction(el, kind) {
+    if(el.classList.contains('completed') || el.classList.contains('wrong')) return;
+
+    el.classList.add(kind ? 'completed' : 'wrong');
+    el.innerHTML += kind ? ' ⭐' : ' ❌';
+    if (kind) gameState.count++;
+    document.getElementById('count').textContent = gameState.count + '/4';
+    if (gameState.count >= 4) celebrate();
+    else if (kind) speak('That was very kind!');
+    else speak('Try to be kinder next time.');
+}
+
+function loadQuiz() {
+    const quizEl = document.getElementById('quiz');
+    const q = gameState.questions[gameState.currentQ];
+    if (!q) {
+        document.getElementById('quiz-status').textContent = `Finished! Score: ${gameState.score}/${gameState.max}`;
+        if (gameState.score >= gameState.max) celebrate();
+        else speak('Keep practicing!');
+        return;
+    }
+    document.getElementById('quiz-status').textContent = `Question ${gameState.currentQ + 1} of ${gameState.max}`;
+    
+    let html = `<h4 style="font-size: 1.3rem; color: #764ba2; margin-bottom: 15px;">${q.q}</h4>`;
+    q.opts.forEach((opt, index) => {
+        html += `<button class="big-btn" style="background:#00bcd4; margin: 5px;" onclick="checkAnswer(${index}, ${q.a})">${opt}</button>`;
+    });
+    quizEl.innerHTML = html;
+    speak(q.q);
+}
+
+function checkAnswer(chosenIndex, correctIndex) {
+    if (chosenIndex === correctIndex) {
+        speak('Correct!');
+        gameState.score++;
+    } else {
+        speak('Not quite, the correct answer was ' + gameState.questions[gameState.currentQ].opts[correctIndex]);
+    }
+    gameState.currentQ++;
+    loadQuiz();
+}
+
+function updateProgress() {
+    document.getElementById('count').textContent = gameState.count + '/' + gameState.max;
+    if (document.getElementById('prog')) {
+        const pct = (gameState.count / gameState.max) * 100;
+        document.getElementById('prog').style.width = pct + '%';
+        document.getElementById('prog').textContent = Math.round(pct) + '%';
+    }
+}
+
+function backToMenu() {
+    stopTimer();
+    // Use selectedAge to return to the correct age menu
+    if (selectedAge === 'growing') {
+        showScreen('growing-full-hub');
+    } else if (selectedAge === 'super') {
+        showScreen('super-full-bundle');
+    } else {
+        showScreen(selectedAge + '-menu');
+    }
+}
+
+// --- UTILITY FUNCTIONS ---
+function speak(text) {
+    if (!voiceEnabled) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.9; u.pitch = 1.2;
+    synth.speak(u);
+}
+
+function playSound(freq) {
+    if (!musicEnabled) return;
+    // Simple tone generator for celebration sound
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq;
+    gain.gain.value = 0.2;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+}
+
+function toggleVoice() {
+    voiceEnabled = !voiceEnabled;
+    document.getElementById('voice-btn').textContent = voiceEnabled ? '🔊' : '🔈';
+    if(voiceEnabled) speak('Voice activated!');
+}
+
+function toggleMusic() {
+    musicEnabled = !musicEnabled;
+    document.getElementById('music-btn').textContent = musicEnabled ? '🎵' : '🔇';
+}
+
+function startTimer() {
+    timeRemaining = 180; // 3 minutes
+    updateTimer();
+    timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimer();
+        if (timeRemaining <= 0) {
+            stopTimer();
+            speak('Time\'s up!');
+        }
+    }, 1000);
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
+}
+
+function updateTimer() {
+    const m = Math.floor(timeRemaining / 60);
+    const s = timeRemaining % 60;
+    document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function celebrate() {
+    stopTimer();
+    // Safely update the star count
+    if (stars[selectedAge] && stars[selectedAge][currentGame] !== undefined) {
+        stars[selectedAge][currentGame]++;
+    }
+    updateDashboard(); // Update the dashboard immediately
+    
+    const celebEl = document.getElementById('celebration');
+    celebEl.classList.remove('hidden');
+    playSound(1000);
+    speak('Amazing! You earned a star!');
+    
+    setTimeout(() => {
+        celebEl.classList.add('hidden');
+        backToMenu();
+    }, 3000);
+}
+
+function updateDashboard() {
+    // Junior Stars
+    Object.keys(stars.junior).forEach(k => {
+        const el = document.getElementById('star-' + k);
+        if (el) el.textContent = stars.junior[k] + '⭐';
+    });
+    // Growing Stars
+    Object.keys(stars.growing).forEach(k => {
+        const el = document.getElementById('star-' + k);
+        if (el) el.textContent = stars.growing[k] + '⭐';
+    });
+    // Super Stars
+    Object.keys(stars.super).forEach(k => {
+        const el = document.getElementById('star-' + k);
+        if (el) el.textContent = stars.super[k] + '⭐';
+    });
+
+    // Parent Dashboard Summary
+    const growingComplete = Object.values(stars.growing).filter(s => s > 0).length;
+    const superComplete = Object.values(stars.super).filter(s => s > 0).length;
+
+    const growingSummaryEl = document.getElementById('growing-score-summary');
+    if(growingSummaryEl) growingSummaryEl.textContent = `${growingComplete}/12 Missions`;
+    
+    const superSummaryEl = document.getElementById('super-score-summary');
+    if(superSummaryEl) superSummaryEl.textContent = `${superComplete}/13 Missions`;
+}
+
+// Functions for the new age 6-7 and 8-9 sections
+function injectBackButton() {
+    // Create back button overlay
+    const overlay = document.getElementById('backOverlay');
+    
+    // Check if we're in a game page (not the hub)
+    const isGamePage = window.location.pathname.includes('.html') && 
+                       !window.location.pathname.includes('index') &&
+                       window.location.pathname !== '/';
+    
+    if (isGamePage) {
+        overlay.style.display = 'block';
+        
+        setTimeout(() => {
+            const backButtons = document.querySelectorAll('.back-btn, [onclick*="reset"], .footer-btn');
+            
+            backButtons.forEach(btn => {
+                if (btn.textContent.includes('Back') || btn.textContent.includes('←')) {
+                    btn.onclick = goBackToHub;
+                }
+                
+                if (btn.textContent.includes('Missions')) {
+                    btn.onclick = goBackToHub;
+                }
+                
+                if (btn.textContent.includes('Profile')) {
+                    btn.onclick = goBackToHub;
+                }
+            });
+            
+            const specificBackBtn = document.querySelector('.back-btn');
+            if (specificBackBtn) {
+                specificBackBtn.onclick = goBackToHub;
+            }
+            
+            const footerBtns = document.querySelectorAll('.footer-btn');
+            footerBtns.forEach(btn => {
+                if (btn.textContent.includes('←')) {
+                    btn.onclick = goBackToHub;
+                }
+            });
+        }, 1000);
+    }
+}
+
+function goBackToHub() {
+    // Go back to the hub page
+    if (selectedAge === 'growing') {
+        showScreen('growing-full-hub');
+    } else if (selectedAge === 'super') {
+        showScreen('super-full-bundle');
+    }
+}
+
+// Add game event listeners for Age 6-7 and Age 8-9 sections
+function setupGameCardListeners() {
+    // Age 6-7 game cards
+    const growingGames = {
+        'recycling': 'recycle',
+        'road': 'road',
+        'study': 'study',
+        'environment': 'environment',
+        'sleep': 'sleep',
+        'bag': 'bag',
+        'lifeskills': 'lifeskills',
+        'bekind': 'bekind',
+        'plant': 'plant'
+    };
+    
+    // Age 8-9 game cards  
+    const superGames = {
+        'art': 'art',
+        'math': 'math',
+        'brain': 'brain',
+        'money': 'money',
+        'writing': 'writing',
+        'science': 'science',
+        'history': 'history',
+        'geography': 'geography',
+        'coding': 'coding'
+    };
+    
+    // Add click listeners to Age 6-7 game cards
+    document.querySelectorAll('#growing-full-hub .game-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            const gameKey = this.getAttribute('data-game');
+            const gameFunc = growingGames[gameKey];
+            if (gameFunc) {
+                startGame(gameFunc);
+            }
+        });
+    });
+    
+    // Add click listeners to Age 8-9 game cards
+    document.querySelectorAll('#super-full-bundle .game-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault();
+            const gameKey = this.getAttribute('data-game');
+            const gameFunc = superGames[gameKey];
+            if (gameFunc) {
+                startGame(gameFunc);
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Ensure the start screen is active on load
+    document.getElementById('start-screen').classList.add('active');
+    // Set up initial dashboard view
+    updateDashboard(); 
+    
+    // Add event listener for the back button overlay
+    document.getElementById('backOverlay')?.addEventListener('click', goBackToHub);
+    
+    // Add keyboard support (Escape key to go back)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            goBackToHub();
+        }
+    });
+    
+    // Handle game card clicks - store which game we're going to
+    document.querySelectorAll('.game-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            const gameName = this.getAttribute('data-game');
+            localStorage.setItem('lastGame', gameName);
+        });
+    });
+    
+    // Setup game card listeners for Age 6-7 and Age 8-9 sections
+    setupGameCardListeners();
+});
+</script>
+</head>
+<body>
+
+<div id="start-screen" class="screen active" style="justify-content: space-around;">
+  <h1 class="header-title">Life Skills Adventure</h1>
+  <p class="sub-text" style="color:#fff;">Learn, Play, and Grow Every Day!</p>
+
+  <div style="text-align:center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-around; align-items: center;">
+
+    <img src="image/tiger.jpg" alt="Tiger" style="max-height: 20vh;">
+
+    <div style="text-align:center;">
+      <div class="big-btn" onclick="showScreen('name-screen')">🚀 Start Adventure</div>
+      <div class="big-btn" style="background:#FF69B4;" onclick="showDashboard()">👨‍👩‍👧 Parent Dashboard</div><br>
+      <div class="big-btn" style="background:#FFA500;" onclick="showFunGoals()">🏆 Fun Mission Goals</div><br>
+    </div>
+
+    <div style="display:flex; justify-content:center; gap: 5px;">
+      <img src="image/elephant.jpg" height="250" width="250" alt="elephant">
+      <img src="image/pengiun.jpg" height="250" width="250" alt="pengiun">
+      <img src="image/peacock.jpg" height="250" width="250" alt="Peacock">
+      <img src="image/panda.jpg" height="250" width="250" alt="Panda">
+      <img src="image/bear.jpg" height="250" width="250" alt="bear">
+    </div>
+
+  </div>
+</div>
+
+
+<div id="name-screen" class="screen">
+    <div class="wrapper">
+        <img src="C:\Users\Asus\Downloads\life-skills-game\image\eagle.jpg"  "center" height ="150" width="150">
+        <div class="header-title" style="font-size: 1.5rem;">Create Your Hero Profile!</div>
+        <p class="sub-text" style="color: #667eea; margin-bottom: 10px;">Let's get to know you 😊</p>
+        <label>WHAT'S YOUR NAME?</label><br>
+        <input type="text" id="playerName" placeholder="Enter name..." />
+        <div style="margin-top:10px;">HOW OLD ARE YOU?</div>
+        <div class="age-options">
+            <div class="age-box" data-age-group="junior" onclick="selectAge(this)">3–5<br><b>Junior Heroes</b></div>
+            <div class="age-box" data-age-group="growing" onclick="selectAge(this)">6–7<br><b>Growing Stars</b></div>
+            <div class="age-box" data-age-group="super" onclick="selectAge(this)">8–9<br><b>Super Heroes</b></div>
+        </div>
+    </div>
+    <div class="nav-btn">
+        <div class="big-btn" onclick="showScreen('start-screen')">← Back</div>
+        <div class="big-btn" onclick="startAdventure()">Next →</div>
+    </div>
+</div>
+
+<div id="junior-menu" class="screen">
+    <div class="wrapper">
+        <h2 class="header-title" style="font-size: 1.5rem; color: #9333ea;">🐰 Choose Your Junior Game!(3-5 yrs)</h2>
+        <div class="grid-container">
+            <div class="game-box" onclick="startGame('share')"><div class="emoji">🍪</div><div class="label">Share & Play</div></div>
+            <div class="game-box" onclick="startGame('cleanup')"><div class="emoji">🧸</div><div class="label">Clean Up Toys</div></div>
+            <div class="game-box" onclick="startGame('help')"><div class="emoji">⚽</div><div class="label">Be A Helper</div></div>
+            <div class="game-box" onclick="startGame('emotions')"><div class="emoji">😊</div><div class="label">Feelings Fun</div></div>
+            <div class="game-box" onclick="startGame('mealtime')"><div class="emoji">🍽️</div><div class="label">Mealtime Manners</div></div>
+            <div class="game-box" onclick="startGame('morning')"><div class="emoji">☀️</div><div class="label">Morning Routine</div></div>
+        </div>
+    </div>
+    <div class="btn-row"><div class="big-btn" onclick="showScreen('name-screen')">← Back to Profile</div></div>
+</div>
+
+<!-- ======================================================================
+     AGE 6-7: GROWING STARS - COMPLETE GAME HUB (Design from design.html)
+     ====================================================================== -->
+<div id="growing-full-hub" class="screen">
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>🌟 Life Skills Junior(6-7 yrs) 🌟</h1>
+                <p>Welcome to your superhero learning adventure! Choose a game below to learn important life skills while having fun!</p>
+            </div>
+            
+            <div class="games-grid">
+                <!-- Recycling Game -->
+                <a href="#" class="game-card" data-game="recycling">
+                    <div class="game-icon recycle">♻️</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Recycling Game</h2>
+                        <p class="game-description">Learn to sort trash and recyclables correctly. Drag items to the right bins!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Road Safety Game -->
+                <a href="#" class="game-card" data-game="road">
+                    <div class="game-icon road">🚦</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Road Crossing Safety</h2>
+                        <p class="game-description">Learn to cross roads safely with traffic lights and avoid accidents!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Study Habits Game -->
+                <a href="#" class="game-card" data-game="study">
+                    <div class="game-icon study">📚</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Study Habits Game</h2>
+                        <p class="game-description">Develop good study habits and avoid distractions. Earn stars for smart choices!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Environment Awareness Game -->
+                <a href="#" class="game-card" data-game="environment">
+                    <div class="game-icon environment">🌱</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Environment Game</h2>
+                        <p class="game-description">Learn how to protect our planet with eco-friendly habits and actions!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Sleep Habits Game -->
+                <a href="#" class="game-card" data-game="sleep">
+                    <div class="game-icon sleep">😴</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Sleep Habits Game</h2>
+                        <p class="game-description">Learn healthy bedtime routines and good sleep habits for better rest!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Pack School Bag Game -->
+                <a href="#" class="game-card" data-game="bag">
+                    <div class="game-icon bag">🎒</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Pack School Bag</h2>
+                        <p class="game-description">Pack your school bag with the right items. Don't forget anything important!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Life Skills 4-Panel Game -->
+                <a href="#" class="game-card" data-game="lifeskills">
+                    <div class="game-icon lifeskills">🌟</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Life Skills Challenge</h2>
+                        <p class="game-description">Complete 4 important life skill tasks against the clock. Can you do them all?</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Be Kind Mission -->
+                <a href="#" class="game-card" data-game="bekind">
+                    <div class="game-icon bekind">🤝</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Be Kind Mission</h2>
+                        <p class="game-description">Learn kindness and empathy by choosing the right actions. Spread joy!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Plant Watering Game -->
+                <a href="#" class="game-card" data-game="plant">
+                    <div class="game-icon plant">💧</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Water the Plant</h2>
+                        <p class="game-description">Catch water drops to grow your plant while avoiding obstacles. Keep it happy!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="footer">
+                <p>🎮 9 Amazing Games • 🌟 Earn Stars • 🏆 Become a Life Skills Superhero!</p>
+                <p>All games are designed to be fun, educational, and child-friendly!</p>
+            </div>
+        </div>
+    </div>
+    <div class="btn-row"><div class="big-btn" onclick="showScreen('name-screen')">← Back to Profile</div></div>
+</div>
+
+<!-- ======================================================================
+     AGE 8-9: SUPER HEROES - COMPLETE GAME HUB 
+     ====================================================================== -->
+<div id="super-full-bundle" class="screen">
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>🚀 Super Heroes Learning Hub(8-9 yrs)🚀</h1>
+                <p>Welcome to advanced learning adventures! Choose from these challenging and educational games designed for ages 8-9!</p>
+            </div>
+            
+            <div class="games-grid">
+                <!-- Art & Design Game -->
+                <a href="#" class="game-card" data-game="art">
+                    <div class="game-icon art">🎨</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Art & Design Studio</h2>
+                        <p class="game-description">Unleash your creativity with drawing, painting, and design tools!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Math Wizard Game -->
+                <a href="#" class="game-card" data-game="math">
+                    <div class="game-icon math">🧮</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Math Wizard Arena</h2>
+                        <p class="game-description">Master math challenges with puzzles, equations, and problem-solving!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Brain Teaser Game -->
+                <a href="#" class="game-card" data-game="brain">
+                    <div class="game-icon brain">🧩</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Brain Teaser Quest</h2>
+                        <p class="game-description">Solve challenging puzzles and logic problems to boost your brain power!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Money Math Game -->
+                <a href="#" class="game-card" data-game="money">
+                    <div class="game-icon money">💰</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Money Math Master</h2>
+                        <p class="game-description">Learn about money, budgeting, and financial skills through fun games!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Creative Writing Game -->
+                <a href="#" class="game-card" data-game="writing">
+                    <div class="game-icon writing">✍️</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Creative Writer Studio</h2>
+                        <p class="game-description">Write stories, poems, and develop your writing skills with creative prompts!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Science Explorer Game -->
+                <a href="#" class="game-card" data-game="science">
+                    <div class="game-icon science">🔬</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Science Explorer</h2>
+                        <p class="game-description">Discover science experiments, nature facts, and environmental science!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- History Adventure Game -->
+                <a href="#" class="game-card" data-game="history">
+                    <div class="game-icon history">🏛️</div>
+                    <div class="game-content">
+                        <h2 class="game-title">History Adventure</h2>
+                        <p class="game-description">Travel through time and learn about historical events and civilizations!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Geography Explorer Game -->
+                <a href="#" class="game-card" data-game="geography">
+                    <div class="game-icon geography">🌍</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Geography Explorer</h2>
+                        <p class="game-description">Learn about countries, capitals, maps, and world geography!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+                
+                <!-- Coding Basics Game -->
+                <a href="#" class="game-card" data-game="coding">
+                    <div class="game-icon coding">💻</div>
+                    <div class="game-content">
+                        <h2 class="game-title">Coding Basics</h2>
+                        <p class="game-description">Learn basic programming concepts through fun visual coding puzzles!</p>
+                        <div class="play-button">Play Now →</div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="footer">
+                <p>🎮 9 Advanced Games • 🧠 Critical Thinking • 🏆 Become a Super Hero Learner!</p>
+                <p>All games are designed to challenge and educate young minds aged 8-9!</p>
+            </div>
+        </div>
+    </div>
+    <div class="btn-row"><div class="big-btn" onclick="showScreen('name-screen')">← Back to Profile</div></div>
+</div>
+
+<div id="game-container" class="screen">
+    <div class="controls-bar">
+        <div class="sound-toggle" onclick="toggleVoice()" id="voice-btn">🔊</div>
+        <div class="timer-display" id="timer">3:00</div>
+        <div class="sound-toggle" onclick="toggleMusic()" id="music-btn">🎵</div>
+    </div>
+    <div class="wrapper" style="max-height: calc(100vh - 80px);">
+        <div class="game-area" id="game-content"></div>
+    </div>
+    <div class="btn-row"><div class="big-btn" onclick="backToMenu()">← Back to Menu</div></div>
+</div>
+
+<div id="celebration" class="celebration hidden">
+    <div style="text-align: center;">
+        <div class="celebration-star">⭐</div>
+        <div class="celebration-text">WELL DONE!</div>
+        <div class="celebration-text" style="font-size: 1.2rem;">You earned a star!</div>
+    </div>
+</div>
+
+<div id="dashboard" class="screen">
+    <div class="wrapper">
+        <h2 class="header-title" style="font-size: 1.5rem; color: #9333ea;">📊 Parent Dashboard</h2>
+        <div style="overflow-y: auto; flex: 1; padding: 5px;">
+            <h3 style="margin: 5px 0; color: #667eea; font-size: 1.1rem;">🐰 Junior Heroes (3-5)</h3>
+            <div class="star-row">🍪 Share & Play: <span id="star-share">0⭐</span></div>
+            <div class="star-row">🧸 Clean Up Toys: <span id="star-cleanup">0⭐</span></div>
+            <div class="star-row">⚽ Be A Helper: <span id="star-help">0⭐</span></div>
+            <div class="star-row">😊 Feelings Fun: <span id="star-emotions">0⭐</span></div>
+            <div class="star-row">🍽️ Mealtime Manners: <span id="star-mealtime">0⭐</span></div>
+            <div class="star-row">☀️ Morning Routine: <span id="star-morning">0⭐</span></div>
+            <hr>
+            <h3 style="margin: 5px 0; color: #667eea; font-size: 1.1rem;">🌟 Growing Stars (6-7)</h3>
+            <div class="star-row">🌞 Routine Pro: <span id="star-morningplus">0⭐</span></div>
+            <div class="star-row">🍎 Healthy Food: <span id="star-healthy">0⭐</span></div>
+            <div class="star-row">📚 Organize & Tidy: <span id="star-organize">0⭐</span></div>
+            <div class="star-row">🤗 Be Kind Choices: <span id="star-bekind">0⭐</span></div>
+            <div class="star-row">♻️ Recycling Game: <span id="star-recycle">0⭐</span></div>
+            <div class="star-row">🚦 Road Safety: <span id="star-road">0⭐</span></div>
+            <div class="star-row">📚 Study Habits: <span id="star-study">0⭐</span></div>
+            <div class="star-row">🌱 Environment Game: <span id="star-environment">0⭐</span></div>
+            <div class="star-row">😴 Sleep Habits: <span id="star-sleep">0⭐</span></div>
+            <div class="star-row">🎒 Pack School Bag: <span id="star-bag">0⭐</span></div>
+            <div class="star-row">🌟 Life Skills Challenge: <span id="star-lifeskills">0⭐</span></div>
+            <div class="star-row">💧 Water the Plant: <span id="star-plant">0⭐</span></div>
+            <hr>
+            <h3 style="margin: 5px 0; color: #667eea; font-size: 1.1rem;">⚡ Super Heroes (8-9)</h3>
+            <div class="star-row">🚦 Road Safety: <span id="star-road">0⭐</span></div>
+            <div class="star-row">🎒 Pack Your Bag: <span id="star-backpack">0⭐</span></div>
+            <div class="star-row">♻️ Recycle Sort: <span id="star-recycle">0⭐</span></div>
+            <div class="star-row">🌱 Plant Care: <span id="star-plant">0⭐</span></div>
+            <div class="star-row">🎨 Art & Design: <span id="star-art">0⭐</span></div>
+            <div class="star-row">🧮 Math Wizard: <span id="star-math">0⭐</span></div>
+            <div class="star-row">🧩 Brain Teaser: <span id="star-brain">0⭐</span></div>
+            <div class="star-row">💰 Money Math: <span id="star-money">0⭐</span></div>
+            <div class="star-row">✍️ Creative Writing: <span id="star-writing">0⭐</span></div>
+            <div class="star-row">🔬 Science Explorer: <span id="star-science">0⭐</span></div>
+            <div class="star-row">🏛️ History Adventure: <span id="star-history">0⭐</span></div>
+            <div class="star-row">🌍 Geography Explorer: <span id="star-geography">0⭐</span></div>
+            <div class="star-row">💻 Coding Basics: <span id="star-coding">0⭐</span></div>
+        </div>
+    </div>
+    <div class="btn-row"><div class="big-btn" onclick="showScreen('start-screen')">← Back to Start</div></div>
+</div>
+
+<div id="goals" class="screen">
+    <div class="wrapper">
+        <h2 class="header-title" style="font-size: 1.5rem; color: #9333ea;">🏆 Fun Mission Goals</h2>
+        <div style="overflow-y: auto; flex: 1; padding: 5px;">
+            <div style="background: #e0f7fa; padding: 10px; border-radius: 10px; margin: 10px 0;">
+                <h3 style="color: #9333ea; font-size: 1.1rem;">Daily 🎯 Challenges</h3>
+                <p style="font-size: 0.9rem; margin-top: 5px;">✅ Complete 3 games</p>
+                <p style="font-size: 0.9rem;">✅ Earn 5 stars</p>
+                <p style="font-size: 0.9rem;">✅ Practice one new skill in real life</p>
+            </div>
+            <div style="background: #d4edda; padding: 10px; border-radius: 10px; margin: 10px 0;">
+                <h3 style="color: #16a34a; font-size: 1.1rem;">Weekly 🌟 Missions</h3>
+                <p style="font-size: 0.9rem; margin-top: 5px;">🌟 Complete every game at least once</p>
+                <p style="font-size: 0.9rem;">🌟 Earn 20 stars</p>
+                <p style="font-size: 0.9rem;">🌟 Help with a family chore every day</p>
+            </div>
+        </div>
+    </div>
+    <div class="btn-row"><div class="big-btn" onclick="showScreen('start-screen')">← Back to Start</div></div>
+</div>
+
+<!-- Back button overlay for games -->
+<div class="game-back-overlay" id="backOverlay">
+    <button class="game-back-btn" onclick="goBackToHub()">← Back to Games</button>
+</div>
+
+</body>
+
+</html>
+
+
